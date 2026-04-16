@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Finance Tracker</title>
+    <style>
+      /* Reset & Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        color: #1e2937;
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      /* Header */
+      header {
+        padding: 30px 40px;
+        background: #0f172a;
+        color: white;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+      }
+
+      /* Dashboard */
+      .dashboard {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      .balance-card {
+        background: linear-gradient(135deg, #1e2937, #334155);
+        color: white;
+        padding: 35px 40px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .balance-card h3 {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 8px;
+      }
+
+      .balance-card h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        letter-spacing: -2px;
+      }
+
+      /* Cards Container */
+      .cards-container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .card {
+        flex: 1;
+        min-width: 280px;
+        padding: 25px 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+      }
+
+      .income-card {
+        background: #ecfdf5;
+        border-left: 6px solid #10b981;
+      }
+
+      .expense-card {
+        background: #fef2f2;
+        border-left: 6px solid #ef4444;
+      }
+
+      .card h4 {
+        font-size: 1.1rem;
+        color: #64748b;
+        margin-bottom: 8px;
+      }
+
+      .amount {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      #money-plus {
+        color: #10b981;
+      }
+      #money-minus {
+        color: #ef4444;
+      }
+
+      /* Transactions */
+      .transactions-section {
+        padding: 0 40px 40px;
+      }
+
+      .transactions-section h2 {
+        margin-bottom: 20px;
+        color: #1e2937;
+        font-size: 1.4rem;
+      }
+
+      .list {
+        list-style: none;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 10px;
+        max-height: 420px;
+        overflow-y: auto;
+      }
+
+      .list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 25px;
+        background: white;
+        margin-bottom: 8px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+      }
+
+      .list li:last-child {
+        margin-bottom: 0;
+      }
+
+      .list li.plus {
+        border-left: 5px solid #10b981;
+      }
+
+      .list li.minus {
+        border-left: 5px solid #ef4444;
+      }
+
+      .list li span {
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+
+      .delete-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+      }
+
+      .delete-btn:hover {
+        background: #b91c1c;
+        transform: scale(1.1);
+      }
+
+      /* Form */
+      .form-section {
+        padding: 0 40px 50px;
+      }
+
+      .form-section h2 {
+        margin-bottom: 20px;
+        font-size: 1.4rem;
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #475569;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        transition: border 0.2s;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #10b981;
+      }
+
+      /* Toggle */
+      .type-toggle {
+        display: flex;
+        background: #f1f5f9;
+        border-radius: 9999px;
+        padding: 6px;
+        width: fit-content;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .toggle-btn {
+        padding: 12px 32px;
+        border: none;
+        background: transparent;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-btn.active {
+        background: #10b981;
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+
+      /* Button */
+      .btn {
+        width: 100%;
+        padding: 18px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: #10b981;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #059669;
+        transform: translateY(-2px);
+      }
+
+      /* Empty State */
+      .list .no-transactions {
+        padding: 60px 20px;
+        text-align: center;
+        color: #64748b;
+        font-style: italic;
+        font-size: 1.1rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .balance-card h1 {
+          font-size: 2.8rem;
+        }
+        .cards-container {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>💰 Personal Finance Tracker</h1>
+      </header>
+
+      <!-- Dashboard -->
+      <div class="dashboard">
+        <!-- Total Balance Card -->
+        <div class="balance-card">
+          <h3>Total Balance</h3>
+          <h1 id="balance">₹0.00</h1>
+        </div>
+
+        <!-- Income & Expense Cards -->
+        <div class="cards-container">
+          <div class="card income-card">
+            <h4>Income</h4>
+            <p id="money-plus" class="amount">+₹0.00</p>
+          </div>
+          <div class="card expense-card">
+            <h4>Expense</h4>
+            <p id="money-minus" class="amount">-₹0.00</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="transactions-section">
+        <h2>Transaction History</h2>
+        <ul id="list" class="list"></ul>
+      </div>
+
+      <!-- Add Transaction Form -->
+      <div class="form-section">
+        <h2>Add New Transaction</h2>
+        <form id="form">
+          <div class="form-group">
+            <label for="description">Description</label>
+            <input
+              type="text"
+              id="description"
+              placeholder="e.g. Freelance project, Grocery"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="amount">Amount (₹)</label>
+            <input
+              type="number"
+              id="amount"
+              step="0.01"
+              placeholder="0.00"
+              required
+            />
+          </div>
+
+          <!-- Modern Toggle -->
+          <div class="form-group">
+            <label>Transaction Type</label>
+            <div class="type-toggle">
+              <button
+                type="button"
+                id="income-toggle"
+                class="toggle-btn active"
+                data-type="income"
+              >
+                Income
+              </button>
+              <button
+                type="button"
+                id="expense-toggle"
+                class="toggle-btn"
+                data-type="expense"
+              >
+                Expense
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Add Transaction</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // ==================== PERSONAL FINANCE TRACKER ====================
+
+      // 1. DOM Elements
+      const balanceEl = document.getElementById("balance");
+      const moneyPlusEl = document.getElementById("money-plus");
+      const moneyMinusEl = document.getElementById("money-minus");
+      const listEl = document.getElementById("list");
+      const formEl = document.getElementById("form");
+      const descriptionEl = document.getElementById("description");
+      const amountEl = document.getElementById("amount");
+      const incomeToggle = document.getElementById("income-toggle");
+      const expenseToggle = document.getElementById("expense-toggle");
+
+      // 2. State
+      let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+      let currentType = "income"; // Default to income
+
+      // 3. Generate unique ID
+      function generateID() {
+        return Date.now() + Math.floor(Math.random() * 1000);
+      }
+
+      // 4. Add transaction to DOM
+      function addTransactionDOM(transaction) {
+        const sign = transaction.amount < 0 ? "-" : "+";
+        const itemClass = transaction.amount < 0 ? "minus" : "plus";
+
+        const li = document.createElement("li");
+        li.classList.add(itemClass);
+        li.innerHTML = `
+                      ${transaction.description}
+                      <span>${sign}₹${Math.abs(transaction.amount).toFixed(2)}</span>
+                      <button class="delete-btn" data-id="${transaction.id}">×</button>
+                  `;
+        listEl.appendChild(li);
+      }
+
+      // 5. Update balance, income & expense
+      function updateValues() {
+        const amounts = transactions.map((t) => t.amount);
+
+        const total = amounts.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+        const income = amounts
+          .filter((item) => item > 0)
+          .reduce((acc, curr) => acc + curr, 0)
+          .toFixed(2);
+        const expense = Math.abs(
+          amounts
+            .filter((item) => item < 0)
+            .reduce((acc, curr) => acc + curr, 0),
+        ).toFixed(2);
+
+        balanceEl.textContent = `₹${total}`;
+        moneyPlusEl.textContent = `+₹${income}`;
+        moneyMinusEl.textContent = `-₹${expense}`;
+      }
+
+      // 6. Update LocalStorage
+      function updateLocalStorage() {
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+      }
+
+      // 7. Initialize / Render everything
+      function init() {
+        listEl.innerHTML = "";
+
+        if (transactions.length === 0) {
+          const emptyLi = document.createElement("li");
+          emptyLi.className = "no-transactions";
+          emptyLi.innerHTML = `No transactions yet.<br><span style="font-size:0.95rem;">Add your first one above 👆</span>`;
+          listEl.appendChild(emptyLi);
+          return;
+        }
+
+        transactions.forEach(addTransactionDOM);
+        updateValues();
+      }
+
+      // 8. Add new transaction
+      function addTransaction(e) {
+        e.preventDefault();
+
+        if (descriptionEl.value.trim() === "" || amountEl.value.trim() === "") {
+          alert("Please enter a description and amount");
+          return;
+        }
+
+        const amount = parseFloat(amountEl.value);
+        const finalAmount =
+          currentType === "expense" ? -Math.abs(amount) : Math.abs(amount);
+
+        const transaction = {
+          id: generateID(),
+          description: descriptionEl.value.trim(),
+          amount: finalAmount,
+        };
+
+        transactions.push(transaction);
+
+        addTransactionDOM(transaction);
+        updateValues();
+        updateLocalStorage();
+
+        // Reset form
+        descriptionEl.value = "";
+        amountEl.value = "";
+        // Reset toggle to Income (optional UX choice)
+        setActiveToggle("income");
+      }
+
+      // 9. Remove transaction
+      function removeTransaction(id) {
+        transactions = transactions.filter((t) => t.id !== id);
+        updateLocalStorage();
+        init();
+      }
+
+      // 10. Toggle handler
+      function setActiveToggle(type) {
+        currentType = type;
+        incomeToggle.classList.toggle("active", type === "income");
+        expenseToggle.classList.toggle("active", type === "expense");
+      }
+
+      // ==================== Event Listeners ====================
+
+      // Form submit
+      formEl.addEventListener("submit", addTransaction);
+
+      // Toggle buttons
+      incomeToggle.addEventListener("click", () => setActiveToggle("income"));
+      expenseToggle.addEventListener("click", () => setActiveToggle("expense"));
+
+      // Delete button (event delegation - best practice)
+      listEl.addEventListener("click", (e) => {
+        if (e.target.classList.contains("delete-btn")) {
+          const id = parseInt(e.target.dataset.id);
+          removeTransaction(id);
+        }
+      });
+
+      // Boot the app
+      init();
+    </script>
+  </body>
+</html>
